@@ -78,16 +78,18 @@ slack-events  OK
 
 ### Set Up Your Slack Bot and App
 
-In order for the application to recieve events from Slack, we have to create a Slack App that will send events in JSON format via the Slack Events API:
+In order for the application to recieve events from Slack, we have to create a Slack App that will send events, in JSON format, via the Slack Events API:
 
 - Create a new Slack app at https://api.slack.com/apps
 - Click “Create New App,” choose “From scratch,” name it something like “SlackPanda Monitor,” and select the Slack workspace you want to use.
 
-- Grab Credentials
+- Grab Credentials:
   - Under “Basic Information,” collect your Signing Secret (you’ll need that in your Flask app).
-  - Find the option on the main menu to "Install the App" to your workspace, which will allow you to get a Bot User OAuth Token (also needed by the backend).
+  - Find the option on the main menu to "Install the App" to your workspace, which will allow you to retreive a 'Bot User OAuth Token' (also needed by the backend).
 - Enable Event Subscriptions (Events API)
-  - Open app.py (from the "backend" folder") and add the Signing Secret you collected from Slack.
+  - Open app.py (from the "backend" folder") and add the Signing Secret you collected from Slack:
+  <img width="382" alt="Screenshot 2025-02-06 at 9 40 10 PM" src="https://github.com/user-attachments/assets/9420388f-ad99-4f25-bcc5-aeff24ebc2ac" />
+
   - In your Slack app settings, go to “Event Subscriptions." Toggle it ON, then set the “Request URL” to your publicly accessible endpoint for /slack-events:
     - Run ```ngrok http 8000``` from the CLI in the directory where you saved the project. Copy the https URL, and  paste it in the Slack Request URL field followed by /slack-events. (it will look something like ``` https://XYZ.ngrok.io/slack-events ```).
   - Slack will ping that URL with a "challenge event" to verify. The Flask code will respond with the challenge, and Slack will verify your Request URL
@@ -115,7 +117,7 @@ There are several advantages to implementing Redpanda here:
 
 - **Decoupling**: Multiple consumers can read Slack events without interfering. This would be especially helpful if you had different dashboards, or if your community was spread across additional platforms outside of Slack, and you wanted to incorporate external metrics into the system.
 - **Persistence**: Slack events are stored in a log. Since this is a locally-hosted application, if your frontend restarts, the application can replay them.
-- **Scalability**: The in-memory queue may not be able to handle a large, highly active community as well as Redpanda.
+- **Scalability**: The in-memory queue may not be able to handle a large, highly-active community as well as Redpanda.
 - **Speed**: Redpanda boasts [industry-leading performance](https://www.redpanda.com/guides/kafka-performance).
 
 3.2 Installing and Running the Backend
@@ -129,7 +131,7 @@ pip install -r requirements.txt
 python app.py
 ```
 
-Go to http://localhost:8000/metrics in your browser where you might see  this JSON response:
+Go to http://localhost:8000/metrics in your browser where you should see this JSON response:
 ```
 json
 Copy
@@ -143,11 +145,11 @@ Edit
 
 3.3 Quick Tests
 
-If you run docker exec -it redpanda rpk topic consume slack-events, you can watch the events appear in Redpanda as Slack sends them through your application. 
+If you run ```docker exec -it redpanda rpk topic consume slack-events```, you can watch the events appear in Redpanda as Slack sends them through your application. 
 
 Trying posting a message in your Slack channel, or invite a friend to join. 
 
-You should see a JSON message with metric_type: "message_count" or metric_type: "member_count" show up. Bingo—your Slack events are streaming!
+You should see a JSON message with metric_type: "message_count" or metric_type: "member_count" show up. Your Slack events are streaming!
 
 ## The Frontend (React)
 4.1 Installing Frontend Dependencies
@@ -158,7 +160,7 @@ npm install
 This sets up React, react-native-sse, etc.
 
 
-### How It Works
+### How It Works:
 App.js connects to <http://localhost:8000/slack-events-stream> with SSE (Server-Sent Events). 
 
 That endpoint is actually a Kafka consumer (pointed at Redpanda) that relays Slack events in real time. 
@@ -168,7 +170,8 @@ The React app will perform the following:
 - Shows a “Community Health” score that increases with engagement or  decreases if there are no new messages for 30+ minutes.
 - Color-codes the health metric (red/yellow/green) based on value and lists top contributors.
 - Shows “Redpanda: Connected/Disconnected” status banner
-  - Uses a React eventlistener to determine if the SSE connection is open. In other words, it checks to see if there are events streaming from the backend - which can only happen once the events have been consumed from Redpanda. 
+  - Uses a React eventlistener to determine if the SSE connection is open.
+  - In other words, it checks to see if there are events streaming from the backend - which can only happen once the events have been consumed from Redpanda. 
 
 
 ## Running the Frontend
@@ -225,9 +228,9 @@ useEffect(() => {
   return () => clearInterval(interval);
 }, [lastMessageTime]);
 ```
-  - The above calculates positive accumulations to the score. The ```useEffect``` hook contains logic that listens for changes in the metrics like monthly messages and new members. It assigns o.5 points to the total score for a new message, and 1 point for a new member.
+  - This will calculate positive accumulations to the score. The ```useEffect``` hook contains logic that listens for changes in the metrics like monthly messages and new members. It assigns o.5 points to the total score for a new message, and 1 point for a new member.
   - The score is capped at a maximum of 200
-  - However, it wouldn't be nearly as effective if it only _added_ value to the score.
+  - That said, the Community Health formula wouldn't be nearly as effective if it only _added_ value to the score.
 ```
 useEffect(() => {
   const interval = setInterval(() => {
@@ -254,17 +257,17 @@ useEffect(() => {
 }, [lastMessageTime]);
 ```
   - This section is responsible for dedcuting points based on inactivity. If the logic detects that there has not been a new message in the last 30 minutes, a point is deducted from the score.
-  - As a fun little extra, the Health Score also changes colors basd on its value:
+  - As a fun little _extra_, the Health Score also changes colors basd on its value:
    - Red if the score is below 100
    - Yellow if it is between 100 and 150
    - Green if it gets above 150
 
 - Of course, every organization will have different standards and metrics for community health, so feel free to alter this algorithm as you see fit!
-  - For example, my shrimpy test community has 3 users - If your community has 10,000, the score will exceed 200 in hours if not minutes.
+  - For example, my shrimpy test community has 3 users - If your community has 10,000, the score will exceed 200 in hours, if not minutes.
 
 ### Troubleshooting (Addressing the stuff that momentarily confused me when I was building this)
 - **Slack App**: _Make sure_ you added the correct events (like message.channels) and set the “Request URL” to your publicly accessible https://xyz.ngrok.io/slack-events.
-  - The Slack verification process can be tricky. You have to have the backend set up to at least receive Slack's ```challenge``` request, which is why you must download and fill in your backend app.py script with you Slack Signing Secret _before_ you install the Slack app.
+  - The Slack verification process can be tricky. You need to have the backend app.py running, so you can receive Slack's ```challenge``` request. This is why you must download the backend app.py script and inject your Slack Signing Secret _before_ you install the Slack app.
 - **Flask**: Confirm http://localhost:8000/metrics returns JSON. If not, the server might not be running or there’s a port conflict. (I suggested using port 8000 because on Macs, the standard port 5000 is often occupied by some confusing Mac stuff, but feel free to use any open port you wish).
 - **Redpanda**: Use ```docker logs redpanda``` or ```rpk cluster info``` to confirm that it’s up and not throwing errors. Also, run ```rpk topic consume slack-events``` to see raw data.
 - **React**: If your SSE status says “Disconnected,” open your browser’s console to see if there’s a network error. It's possible that the Flask endpoint is not on localhost:8000, or it’s blocked by CORS.
@@ -284,6 +287,7 @@ useEffect(() => {
 -  **Performance**:
   -  An ordinary batch-processing tool can probably handle my shrimpy test community without any major issues, but a real, lively community would benefit signficantly from the speed and processing ability that Redpanda affords in the application stack.
 
-Finsihed product:
+The finished product should look like this:
 
-<img width="853" alt="Screenshot 2025-02-06 at 7 09 58 PM" src="https://github.com/user-attachments/assets/86d84ecf-ac71-4036-adcc-71b6bfdfb1c2" />
+<img width="853" alt="410449470-86d84ecf-ac71-4036-adcc-71b6bfdfb1c2" src="https://github.com/user-attachments/assets/1b7c903b-2ffc-4f19-b4c8-f3ec5c1d3d94" />
+
