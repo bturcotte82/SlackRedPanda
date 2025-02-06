@@ -1,4 +1,4 @@
-# A Slack Community Monitor Dashboard (Built with Redpanda) 🔴🐼
+# A Slack Community Monitor Dashboard - Built with Redpanda 🔴🐼
 
 Are you the owner of an online community based in Slack?
 
