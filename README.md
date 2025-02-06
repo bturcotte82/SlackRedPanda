@@ -4,25 +4,24 @@ Are you the owner of an online community based in Slack?
 
 If so, aren't you just _yearning_ for a tool that would allow you to observe every minute change in user engagement, community health, and recent messages? 👀
 
-Furthermore - don't you wish you could see the metrics changing live, right in front of your face? 👀
+Furthermore - don't you wish you could sit in front of a computer screen and watch the metrics change live before your eyes?! 👀
 
 Look no further!
 
-This simple application allows you to quickly and locally deploy a live Slack Community Dashboard that updates anytime a user in your workspace sends a message, joins the workspace, or interacts with other users. 
+This simple application allows you to quickly and locally deploy a Slack Community Dashboard that updates anytime a user in your workspace sends a message, joins the workspace, or interacts with other users. 
 
 These continuously updated metrics are:
 
-- Total Messages
-- Rolling 30-Day Message count
-- Rolling 30-day New User count
-- Commmunity Health Score (proprietary algorithm)
-- Recent Activity (with hyperlinks to the user's profile)
-- Engagement leaderboard (top contributors over 30 day period)
+- **Total Messages**
+- **Rolling 30-Day Message count**
+- **Rolling 30-day New User count**
+- **Commmunity Health Score** (proprietary algorithm)
+- **Recent Activity** (with hyperlinks to the user's profile)
+- **Engagement leaderboard** (top contributors over 30 day period)
 
 The application is designed to run from your CLI in your local environment.
 
 Here's a map of how the data is produced, consumed, and displayed on the frontend:
-
 
 ![image-2](https://github.com/user-attachments/assets/36a2abb3-43b4-489b-ab2d-28d38e5fe57b)
 
@@ -39,7 +38,7 @@ Here's a map of how the data is produced, consumed, and displayed on the fronten
 
 ### **Download this repository on your local environment:**
 - Run ```git clone https://github.com/bturcotte82/SlackRedPanda```
-- The files app.py (apps>backend>app.py) and app.js (apps>frontend>app.js) are completely marked up with comments explaining what each line/method accomplishes, if you care!
+- The files app.py (apps>backend>app.py) and app.js (apps>frontend>app.js) are marked up with comments explaining what each line/method accomplishes - if you care to look!
 
 ### 1.2 Getting Redpanda Running
 
