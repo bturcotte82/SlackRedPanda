@@ -3,39 +3,40 @@ import EventSource from 'react-native-sse';
 import './App.css';
 
 function App() {
-  const SLACK_WORKSPACE = "brianturcottegroup"; // Replace with your workspace
+  const SLACK_WORKSPACE = "brianturcottegroup"; // Replace with your Slack workspace name
   const [metrics, setMetrics] = useState({
-    totalMessages: 0,      // all-time messages since app load
-    monthlyMessages: 0,    // (30d)
-    activeMembers: 0,      // new members (30d)
+    totalMessages: 0,      // all-time messages since the app loaded
+    monthlyMessages: 0,    // 30d message
+    activeMembers: 0,      // new members 30d
     recentMessages: []
   });
   const [leaderboard, setLeaderboard] = useState({});
   const [healthScore, setHealthScore] = useState(100);
-  const [isConnected, setIsConnected] = useState(false);  // Redpanda connection status
+  const [isConnected, setIsConnected] = useState(false);  // Redpanda "connection" status
   const [lastMessageTime, setLastMessageTime] = useState(null);
 
-  // -------------------------
-  // 1. Load initial data from backend
-  // -------------------------
-  useEffect(() => {
-    // Fetch monthlyMessages and activeMembers
+  // Load data from the backend
+  // ---------------------------------
+  useEffect(() => { //Get monthly messages and active members)
     fetch('http://localhost:8000/metrics')
-      .then(res => res.json())
+      .then(res => res.json()) //convert to JSON
       .then(data => {
         setMetrics(prev => ({
           ...prev,
-          monthlyMessages: data.monthly_messages || 0,
-          activeMembers: data.active_members || 0
+          monthlyMessages: data.monthly_messages || 0, //update monthly messages and active member in the metrics state
+          activeMembers: data.active_members || 0,
+          totalMessages: data.monthly_messages || 0
+
+
         }));
       });
 
-    // Fetch leaderboard
+    // Get the leaderboard
     const updateLeaderboard = () => {
       fetch('http://localhost:8000/leaderboard')
         .then(res => res.json())
         .then(data => {
-          setLeaderboard(data.leaderboard || {});
+          setLeaderboard(data.leaderboard || {}); //store leaderboard data in leaderboard state
         });
     };
     updateLeaderboard();
@@ -45,7 +46,6 @@ function App() {
     return () => clearInterval(interval);
   }, []);
 
-  // -------------------------
   // 2. SSE connection for real-time Slack events
   // -------------------------
   useEffect(() => {
@@ -57,24 +57,24 @@ function App() {
       console.log("Connected to Redpanda via SSE");
     });
 
-    // Handle new SSE messages
+    // Listens for new SSE messages
     sse.addEventListener('message', (e) => {
       try {
-        const event = JSON.parse(e.data);
-        setMetrics(prev => {
+        const event = JSON.parse(e.data); //converts JSON data to a JavaScript object
+        setMetrics(prev => { //updates metrics state, and define logic for increasing counters or updating recent messages feed
           const isMessage = (event.metric_type === 'message_count');
           const isNewMember = (event.metric_type === 'member_count');
 
-          // If this is a message, store the current timestamp
+          // If it is a message, note the current timestamp
           if (isMessage) {
             setLastMessageTime(Date.now());
           }
 
           // Insert new event at the *top* of recentMessages 
-          // and keep only the 10 most recent
+          // keep only the 10 most recent
           const updatedActivity = [event, ...prev.recentMessages].slice(0, 10);
 
-          return {
+          return { //return updated object and increment counters if necessary
             ...prev,
             totalMessages: prev.totalMessages + (isMessage ? 1 : 0),
             monthlyMessages: prev.monthlyMessages + (isMessage ? 1 : 0),
@@ -87,21 +87,20 @@ function App() {
       }
     });
 
-    // Mark disconnected on SSE error
+    // Return disconnected on SSE error
     sse.addEventListener('error', () => {
       setIsConnected(false);
       console.log("SSE connection error");
     });
 
-    // Cleanup on unmount
+    // Close event source to avoid memory leaks on load
     return () => sse.close();
   }, []);
 
-  // -------------------------
-  // 3. Calculate community health score
+  //Calculate community health score
   // -------------------------
   useEffect(() => {
-    // Base formula: start at 100, +0.5 per monthly message, +1 per new member
+    // start at 100, +0.5 per monthly message, +1 per new member
     const score = 100
       + (metrics.monthlyMessages * 0.5)
       + (metrics.activeMembers * 1);
@@ -113,9 +112,8 @@ function App() {
     });
   }, [metrics.monthlyMessages, metrics.activeMembers]);
 
-  // -------------------------
-  // 4. Decrease health if no new messages for 30 min
-  //    (Example logic: lose 1 point if 30 min passes with no new messages)
+  
+  // Decrease health if no new messages for 30 min
   // -------------------------
   useEffect(() => {
     const interval = setInterval(() => {
@@ -138,14 +136,13 @@ function App() {
     return () => clearInterval(interval);
   }, [lastMessageTime]);
 
-  // -------------------------
-  // 5. Determine color based on health score
+  // Change color based on health score
   // -------------------------
   const numericalHealth = parseFloat(healthScore);
-  let healthColorClass = 'health-bad';  // default
+  let healthColorClass = 'health-bad';  // default 
   if (numericalHealth >= 100 && numericalHealth <= 150) {
-    healthColorClass = 'health-medium';
-  } else if (numericalHealth > 150) {
+    healthColorClass = 'health-medium'; //new color if score is greater than 100
+  } else if (numericalHealth > 150) { //new color if score is greater than
     healthColorClass = 'health-good';
   }
 
@@ -172,13 +169,13 @@ function App() {
           <p className="stat stat-green">{metrics.monthlyMessages}</p>
         </div>
 
-        {/* (3) Community Health (dynamic color) */}
+        {/* (3) Community Health (with dynamic color) */}
         <div className="metric-box">
           <h3>Community Health</h3>
           <p className={`stat ${healthColorClass}`}>{healthScore}/200</p>
         </div>
 
-        {/* (4) New Members (30d) (GREEN) */}
+        {/* (4) New Members (30d)  */}
         <div className="metric-box">
           <h3>New Members (30d)</h3>
           <p className="stat stat-green">{metrics.activeMembers}</p>
