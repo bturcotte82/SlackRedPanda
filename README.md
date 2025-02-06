@@ -2,7 +2,7 @@
 
 Are you the owner of an online community based in Slack?
 
-If so - aren't you just _yearning_ for a tool that would allow you to observe every minute change in user engagement, community health, and recent messages? 👀
+If so, aren't you just _yearning_ for a tool that would allow you to observe every minute change in user engagement, community health, and recent messages? 👀
 
 Furthermore - don't you wish you could see the metrics changing live, right in front of your face? 👀
 
@@ -39,6 +39,7 @@ Here's a map of how the data is produced, consumed, and displayed on the fronten
 
 ### **Download this repository on your local environment:**
 - Run ```git clone https://github.com/bturcotte82/SlackRedPanda```
+- The files app.py (apps>backend>app.py) and app.js (apps>frontend>app.js) are completely marked up with comments explaining what each line/method accomplishes, if you care!
 
 ### 1.2 Getting Redpanda Running
 
