@@ -1,10 +1,10 @@
-# A Slack Community Monitor Dashboard (Built with Redpanda)
+# A Slack Community Monitor Dashboard (Built with Redpanda) 🔴🐼
 
-Are you the owner of an online community based in Slack? 
+Are you the owner of an online community based in Slack?
 
-If so - aren't you just _yearning_ for a tool that would allow you to observe every minute change in user engagement, community health, and recent messages?
+If so - aren't you just _yearning_ for a tool that would allow you to observe every minute change in user engagement, community health, and recent messages? 👀
 
-Furthermore - don't you wish you could see the metrics changing live, right in front of your face?
+Furthermore - don't you wish you could see the metrics changing live, right in front of your face? 👀
 
 Look no further!
 
