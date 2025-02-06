@@ -37,8 +37,8 @@ Here's a map of how the data is produced, consumed, and displayed on the fronten
 - Text editor
 - Ngrok
 
-## **Download this repository on your local environment**
-Run ```git clone https://github.com/bturcotte82/SlackRedPanda```
+### **Download this repository on your local environment:**
+- Run ```git clone https://github.com/bturcotte82/SlackRedPanda```
 
 ### 1.2 Getting Redpanda Running
 
