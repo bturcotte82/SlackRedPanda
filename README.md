@@ -1,16 +1,21 @@
 # Slack Community Live Metric Dashboard - Built with Redpanda 🔴🐼
 
-Are you the owner of an online community based in Slack?
+### Are you the owner of an online community based in Slack? 
 
-If so, aren't you just _yearning_ for a tool that would allow you to observe every minute change in user engagement, community health, and recent messages? 👀
+### Is this (⬇️) you?
 
-Furthermore - don't you wish you could sit in front of a computer screen and watch the metrics change live before your eyes?! 👀
+<img src="https://github.com/user-attachments/assets/ccad9635-5221-488e-89d3-d7df0f6fc484" alt="using-the-computer-tim-robinson" width="300">
 
-Look no further!
+__________________________________
+Let's change that. 
 
-This simple application allows you to quickly and locally deploy a Slack Community Dashboard that updates anytime a user in your workspace sends a message, joins the workspace, or interacts with other users. 
+This repository contains a simple application that allows you to quickly and locally deploy a Slack Community Dashboard that updates in real time when users in your workspace:
 
-These continuously updated metrics are:
+- Send a message
+- Join the workspace
+- Interact with other users. 
+
+The dashboard contains the following (continuously updated) metrics:
 
 - **Total Messages**
 - **Rolling 30-Day Message count**
@@ -19,14 +24,19 @@ These continuously updated metrics are:
 - **Recent Activity** (with hyperlinks to the user's profile)
 - **Engagement leaderboard** (top contributors over 30 day period)
 
-The application is designed to run from your CLI in your local environment.
+### It looks like this, when it's running in a browser:
 
-Here's a map of how the data is produced, consumed, and displayed on the frontend:
+<img width="500" alt="410449470-86d84ecf-ac71-4036-adcc-71b6bfdfb1c2" src="https://github.com/user-attachments/assets/1b7c903b-2ffc-4f19-b4c8-f3ec5c1d3d94" />
+
+_______________________________________
+
+### Here's a map of how the data is produced, consumed, and displayed on the frontend:
 
 ![image-2](https://github.com/user-attachments/assets/36a2abb3-43b4-489b-ab2d-28d38e5fe57b)
 
+The application is designed to run from your CLI in your local environment.
 
-
+______________
 ## Prerequisites and Setup
 ### 1.1 Requirements:
 - Docker (20.10.21 or higher) to run Redpanda
@@ -76,6 +86,7 @@ TOPIC         STATUS
 slack-events  OK
 ```
 
+__________________
 ### Set Up Your Slack Bot and App
 
 In order for the application to recieve events from Slack, we have to create a Slack App that will send events, in JSON format, via the Slack Events API:
@@ -104,6 +115,9 @@ In order for the application to recieve events from Slack, we have to create a S
   - Go to OAuth & Permissions > Bot User OAuth Token > Copy
 
 Now, Slack will automatically send JSON events to our backend server (/slack-events route) whenever something new happens — like a new message or a new member.
+
+
+__________________
 
 ## The Backend (Flask + Redpanda)
 
@@ -151,6 +165,11 @@ Trying posting a message in your Slack channel, or invite a friend to join.
 
 You should see a JSON message with metric_type: "message_count" or metric_type: "member_count" show up. Your Slack events are streaming!
 
+
+
+
+____________
+
 ## The Frontend (React)
 4.1 Installing Frontend Dependencies
 ```
@@ -189,6 +208,18 @@ You should see:
 - A scrollable “Recent Activity” feed (empty at first)
 - A “Top Contributors” list
 - A banner that says “Redpanda: Connected ✅” if the SSE link is up
+
+
+
+
+
+
+
+
+
+
+
+____________________
 
 ## In Summary
 
@@ -265,6 +296,8 @@ useEffect(() => {
 - Of course, every organization will have different standards and metrics for community health, so feel free to alter this algorithm as you see fit!
   - For example, my shrimpy test community has 3 users - If your community has 10,000, the score will exceed 200 in hours, if not minutes.
 
+____________
+
 ### Troubleshooting (Addressing the stuff that momentarily confused me when I was building this)
 - **Slack App**: _Make sure_ you added the correct events (like message.channels) and set the “Request URL” to your publicly accessible https://xyz.ngrok.io/slack-events.
   - The Slack verification process can be tricky. You need to have the backend app.py running, so you can receive Slack's ```challenge``` request. This is why you must download the backend app.py script and inject your Slack Signing Secret _before_ you install the Slack app.
@@ -272,6 +305,9 @@ useEffect(() => {
 - **Redpanda**: Use ```docker logs redpanda``` or ```rpk cluster info``` to confirm that it’s up and not throwing errors. Also, run ```rpk topic consume slack-events``` to see raw data.
 - **React**: If your SSE status says “Disconnected,” open your browser’s console to see if there’s a network error. It's possible that the Flask endpoint is not on localhost:8000, or it’s blocked by CORS.
 
+
+
+_______________
 
 ## What makes this application different than other similar tools?
 
@@ -286,8 +322,3 @@ useEffect(() => {
     -  As you can see in the script, Redpanda is Kafka-compatible, so kafka-python just works with no extra steps.
 -  **Performance**:
   -  An ordinary batch-processing tool can probably handle my shrimpy test community without any major issues, but a real, lively community would benefit signficantly from the speed and processing ability that Redpanda affords in the application stack.
-
-The finished product should look like this:
-
-<img width="853" alt="410449470-86d84ecf-ac71-4036-adcc-71b6bfdfb1c2" src="https://github.com/user-attachments/assets/1b7c903b-2ffc-4f19-b4c8-f3ec5c1d3d94" />
-
