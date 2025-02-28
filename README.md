@@ -20,11 +20,11 @@ The dashboard contains the following (continuously updated) metrics:
 - **Total Messages**
 - **Rolling 30-Day Message count**
 - **Rolling 30-day New User count**
-- **Commmunity Health Score** (proprietary algorithm)
+- **Community Health Score** (proprietary algorithm)
 - **Recent Activity** (with hyperlinks to the user's profile)
 - **Engagement leaderboard** (top contributors over 30 day period)
 
-### It looks like this, when it's running in a browser:
+### It looks like this when it's running in a browser:
 
 <img width="500" alt="410449470-86d84ecf-ac71-4036-adcc-71b6bfdfb1c2" src="https://github.com/user-attachments/assets/1b7c903b-2ffc-4f19-b4c8-f3ec5c1d3d94" />
 
@@ -89,14 +89,14 @@ slack-events  OK
 __________________
 ### Set Up Your Slack Bot and App
 
-In order for the application to recieve events from Slack, we have to create a Slack App that will send events, in JSON format, via the Slack Events API:
+In order for the application to receive events from Slack, we have to create a Slack App that will send events, in JSON format, via the Slack Events API:
 
 - Create a new Slack app at https://api.slack.com/apps
 - Click “Create New App,” choose “From scratch,” name it something like “SlackPanda Monitor,” and select the Slack workspace you want to use.
 
 - Grab Credentials:
   - Under “Basic Information,” collect your Signing Secret (you’ll need that in your Flask app).
-  - Find the option on the main menu to "Install the App" to your workspace, which will allow you to retreive a 'Bot User OAuth Token' (also needed by the backend).
+  - Find the option on the main menu to "Install the App" to your workspace, which will allow you to retrieve a 'Bot User OAuth Token' (also needed by the backend).
 - Enable Event Subscriptions (Events API)
   - Open app.py (from the "backend" folder") and add the Signing Secret you collected from Slack:
   <img width="382" alt="Screenshot 2025-02-06 at 9 40 10 PM" src="https://github.com/user-attachments/assets/9420388f-ad99-4f25-bcc5-aeff24ebc2ac" />
@@ -259,7 +259,7 @@ useEffect(() => {
   return () => clearInterval(interval);
 }, [lastMessageTime]);
 ```
-  - This will calculate positive accumulations to the score. The ```useEffect``` hook contains logic that listens for changes in the metrics like monthly messages and new members. It assigns o.5 points to the total score for a new message, and 1 point for a new member.
+  - This will calculate positive accumulations to the score. The ```useEffect``` hook contains logic that listens for changes in the metrics like monthly messages and new members. It assigns 0.5 points to the total score for a new message, and 1 point for a new member.
   - The score is capped at a maximum of 200
   - That said, the Community Health formula wouldn't be nearly as effective if it only _added_ value to the score.
 ```
@@ -287,8 +287,8 @@ useEffect(() => {
   return () => clearInterval(interval);
 }, [lastMessageTime]);
 ```
-  - This section is responsible for dedcuting points based on inactivity. If the logic detects that there has not been a new message in the last 30 minutes, a point is deducted from the score.
-  - As a fun little _extra_, the Health Score also changes colors basd on its value:
+  - This section is responsible for deducting points based on inactivity. If the logic detects that there has not been a new message in the last 30 minutes, a point is deducted from the score.
+  - As a fun little _extra_, the Health Score also changes colors based on its value:
    - Red if the score is below 100
    - Yellow if it is between 100 and 150
    - Green if it gets above 150
@@ -321,4 +321,4 @@ _______________
   - **Simplicity**:
     -  As you can see in the script, Redpanda is Kafka-compatible, so kafka-python just works with no extra steps.
 -  **Performance**:
-  -  An ordinary batch-processing tool can probably handle my shrimpy test community without any major issues, but a real, lively community would benefit signficantly from the speed and processing ability that Redpanda affords in the application stack.
+  -  An ordinary batch-processing tool can probably handle my shrimpy test community without any major issues, but a real, lively community would benefit significantly from the speed and processing ability that Redpanda affords in the application stack.
